@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case study part-2 post read</title>
+<style>
+:root{
+  --bg:#f5f4ef; --card:#fbfaf7; --ink:#12324a; --ink2:#41627a;
+  --sky:#5ab4e5; --sky-d:#1c6c9c; --sky-dd:#0e4468; --sky-l:#cfe8f7; --sky-xl:#e6f3fb;
+  --line:#c9dbe8; --code:#e8eef2; --r:14px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 Georgia,"Times New Roman",serif}
+h1,h2,h3,h4,nav,button,.ui,table,summary,.tag{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--sky-d)}
+:focus-visible{outline:3px solid var(--sky-d);outline-offset:2px;border-radius:4px}
+#bar{position:fixed;top:0;left:0;height:4px;background:var(--sky-d);width:0;z-index:60}
+nav{position:sticky;top:0;z-index:50;background:rgba(245,244,239,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+nav .in{max-width:1080px;margin:auto;padding:10px 20px;display:flex;gap:6px;overflow-x:auto;align-items:center}
+nav b{white-space:nowrap;color:var(--sky-dd);margin-right:10px;font-size:.95rem}
+nav a{white-space:nowrap;text-decoration:none;font-size:.82rem;padding:5px 10px;border-radius:99px;color:var(--ink2)}
+nav a:hover,nav a.on{background:var(--sky-l);color:var(--sky-dd)}
+.hero{background:linear-gradient(135deg,var(--sky-dd),var(--sky-d) 60%,var(--sky));color:#fff;padding:78px 20px 70px}
+.hero .in{max-width:900px;margin:auto}
+.hero h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.1;margin:0 0 14px;letter-spacing:-.02em}
+.hero p{font-size:1.15rem;max-width:700px;opacity:.95;margin:0}
+.tag{display:inline-block;background:rgba(255,255,255,.18);padding:4px 12px;border-radius:99px;font-size:.78rem;margin-bottom:18px;letter-spacing:.06em;text-transform:uppercase}
+main{max-width:860px;margin:auto;padding:20px}
+section{padding:44px 0 8px;scroll-margin-top:50px}
+.num{font:700 .8rem system-ui;color:var(--sky-d);letter-spacing:.12em;text-transform:uppercase}
+h2{font-size:clamp(1.6rem,3.2vw,2.15rem);line-height:1.2;margin:4px 0 16px;color:var(--sky-dd)}
+h3{font-size:1.2rem;margin:30px 0 8px;color:var(--sky-dd)}
+h4{margin:16px 0 4px;font-size:1rem}
+p{margin:0 0 14px}
+code{background:var(--code);padding:1px 6px;border-radius:5px;font:.88em ui-monospace,Menlo,Consolas,monospace}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px 22px;margin:18px 0}
+.story{background:var(--sky-xl);border-left:5px solid var(--sky-d)}
+.call{background:var(--sky-l);border-radius:var(--r);padding:14px 18px;margin:18px 0;font-family:system-ui,sans-serif;font-size:.97rem}
+.call b:first-child{color:var(--sky-dd)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));margin:18px 0}
+.grid .card{margin:0}
+.formula{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:14px 0;text-align:center;font:1.08rem Georgia,serif;overflow-x:auto}
+.viz{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px;margin:20px 0;box-shadow:0 2px 10px rgba(28,108,156,.07)}
+.viz>.vt{font:700 .78rem system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--sky-d);margin-bottom:8px}
+.viz .note{font:.82rem system-ui;color:var(--ink2);margin:10px 0 0}
+button{font:600 .9rem system-ui;background:var(--sky-d);color:#fff;border:0;border-radius:9px;padding:9px 15px;cursor:pointer}
+button:hover{background:var(--sky-dd)}
+button.alt{background:var(--sky-l);color:var(--sky-dd)}
+button.alt:hover{background:var(--line)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.tabs button{background:var(--sky-xl);color:var(--sky-dd)}
+.tabs button[aria-selected=true]{background:var(--sky-d);color:#fff}
+.panel[hidden]{display:none}
+details{border:1px solid var(--line);border-radius:10px;background:var(--card);margin:10px 0}
+summary{cursor:pointer;padding:11px 16px;font-weight:600;color:var(--sky-dd);font-size:.95rem}
+details[open]>summary{border-bottom:1px solid var(--line)}
+details>div{padding:12px 16px}
+pre{background:var(--code);border-radius:10px;padding:14px;overflow-x:auto;margin:10px 0;font:.8rem/1.55 ui-monospace,Menlo,Consolas,monospace;color:#10344c}
+pre.out{background:var(--sky-xl);border-left:4px solid var(--sky)}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:.88rem;background:#fff}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+th{background:var(--sky-l);color:var(--sky-dd)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.hl td{background:var(--sky-xl)}
+.hm td{text-align:center;font-weight:600}
+.bars{display:grid;gap:8px;font:.88rem system-ui}
+.brow{display:grid;grid-template-columns:210px 1fr 64px;gap:10px;align-items:center}
+.btrack{background:var(--sky-xl);border-radius:6px;height:22px;overflow:hidden;position:relative}
+.bfill{height:100%;background:var(--sky-d);border-radius:6px;transition:width .5s}
+.bfill.b2{background:repeating-linear-gradient(45deg,var(--sky),var(--sky) 6px,#8cc9ee 6px,#8cc9ee 12px)}
+.bmark{position:absolute;top:0;bottom:0;width:3px;background:var(--sky-dd)}
+.bval{font-weight:700;text-align:right}
+@media(max-width:620px){.brow{grid-template-columns:120px 1fr 52px;font-size:.8rem}}
+input[type=range],input[type=number]{accent-color:var(--sky-d)}
+input[type=range]{width:100%}
+input[type=number]{font:1rem system-ui;padding:7px 10px;border:1px solid var(--line);border-radius:8px;width:100%;background:#fff;color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{display:inline-block;background:var(--sky-l);color:var(--sky-dd);padding:2px 10px;border-radius:99px;font:600 .82rem system-ui}
+.chip{display:inline-block;border-radius:6px;padding:1px 8px;font:600 .78rem system-ui}
+.chip.ok{background:var(--sky-l);color:var(--sky-dd)}
+.chip.bad{background:var(--sky-dd);color:#fff}
+.stat{font:700 1.5rem system-ui;color:var(--sky-dd)}
+.lab{font:.8rem system-ui;color:var(--ink2)}
+.quiz{background:#fff;border:2px solid var(--sky);border-radius:var(--r);padding:18px;margin:24px 0}
+.quiz .qh{font:700 .78rem system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--sky-d)}
+.quiz label{display:block;border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0;cursor:pointer;font:.95rem/1.5 system-ui}
+.quiz label:hover{background:var(--sky-xl)}
+.quiz input{margin-right:8px;accent-color:var(--sky-d)}
+.quiz .ok{border-color:var(--sky-d);background:var(--sky-l)}
+.quiz .no{border-style:dashed;opacity:.75}
+.quiz .fb{margin-top:10px;padding:12px 14px;border-radius:10px;background:var(--sky-xl);font:.93rem/1.6 system-ui}
+.prompt{background:var(--sky-xl);border:1px dashed var(--sky-d);border-radius:10px;padding:12px 16px;font:.92rem/1.6 system-ui;font-style:italic}
+.memo{background:#fff;border:1px solid var(--sky-d);border-radius:var(--r);padding:24px 28px;margin:18px 0;font-size:.98rem}
+.memo h4{color:var(--sky-dd);margin:14px 0 4px}
+.memo .hd{font:.85rem system-ui;color:var(--ink2);border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:6px}
+ul,ol{padding-left:22px}
+li{margin:5px 0}
+svg text{font-family:system-ui,sans-serif}
+footer{background:var(--sky-dd);color:#fff;text-align:center;padding:34px 20px;margin-top:60px;font:600 1rem system-ui}
+footer small{display:block;font-weight:400;opacity:.75;margin-top:4px}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<nav aria-label="Sections"><div class="in" id="nav"><b>Case study part-2 post read</b></div></nav>
+
+<header class="hero"><div class="in">
+  <span class="tag">Post read · End-to-end machine learning</span>
+  <h1>Case study part-2 post read</h1>
+  <p>Finding where the model breaks: error analysis, unsupervised tools as detectives, the sealed test, drift, monitoring, and a decision memo, told through SwiftBite's delivery promise.</p>
+</div></header>
+
+<main>
+
+<section id="story">
+  <div class="num">Opening story</div>
+  <h2>"Where does it break?"</h2>
+  <div class="card story">
+    <p>Kabir presents his validation results to Ishita and Dev: a cost per order of about 8.4 against 18.2 for the current rule. Ishita nods, then leans back.</p>
+    <p>"A model that works <b>on average</b> is not a model I can run my city on. Show me where it fails. Show me what the bad data does to it. And remember that June is the monsoon, and we open <b>Lakeside</b> on the 8th. If this model breaks, I need to hear it from you, not from the customers."</p>
+    <p>Dev adds: "And before this goes live, I want a clear recommendation. What do we ship, what is the risk, and what do we watch?"</p>
+    <p>Kabir has the sealed June data waiting. The rules: <b>finish all the model decisions on the validation data first, open June once, and report what it says, whatever it is.</b></p>
+  </div>
+  <p>This is the second half of the journey: finding the weak spots, using the unsupervised toolbox as a detective kit, choosing the final model, opening the test set, planning for drift, and writing the decision memo.</p>
+  <div class="card"><h4>Starting point (from Part 1)</h4>
+    <p style="margin:0">Model v1 on validation (May) trains on Jan to Apr with the restaurant-history features and a quantile loss at 0.75. The current rule is the benchmark.</p>
+    <div class="tw"><table>
+      <tr><th></th><th class="n">on_time_%</th><th class="n">late_&gt;10min_%</th><th class="n">avg_over_promise_min</th><th class="n">cost_per_order</th></tr>
+      <tr class="hl"><td>Model v1</td><td class="n">74.46</td><td class="n">3.89</td><td class="n">4.31</td><td class="n">8.40</td></tr>
+      <tr><td>Current rule</td><td class="n">56.84</td><td class="n">17.06</td><td class="n">4.48</td><td class="n">18.19</td></tr>
+    </table></div>
+    <p class="lab" style="margin:0">This time the answer key from the data generator is open, but it is used <b>only to check our work</b> (grading detectors, comparing discovered styles). It is never a model feature. Real projects have no answer key.</p>
+  </div>
+  <details><summary>Code: the rebuild (metrics, model builder, history, split)</summary><div><pre>C_LATE, C_EARLY = 3.0, 1.0
+def order_costs(actual, promise):
+    actual, promise = np.asarray(actual, float), np.asarray(promise, float)
+    return C_LATE * np.maximum(actual - promise, 0) + C_EARLY * np.maximum(promise - actual, 0)
+
+def promise_report(actual, promise):
+    actual, promise = np.asarray(actual, float), np.asarray(promise, float)
+    late, early = np.maximum(actual - promise, 0), np.maximum(promise - actual, 0)
+    return {"on_time_%": 100 * (actual &lt;= promise).mean(), "late_&gt;10min_%": 100 * (late &gt; 10).mean(),
+            "avg_over_promise_min": early.mean(), "cost_per_order": order_costs(actual, promise).mean()}
+
+CAT = ["zone", "restaurant_type", "weather"]
+NUM = ["hour", "is_peak", "restaurant_avg_prep_min", "distance_km", "n_items", "order_value",
+       "temperature_c", "traffic_index", "riders_available_nearby"]
+NUM_V2 = NUM + ["rest_hist_mean", "rest_hist_std"]
+
+def add_history(frame_all, min_orders=10):          # shift(1) + expanding(): past orders only
+    ...
+
+raw, answer_key = make_swiftbite()                  # answer key: for checking only, never a feature
+df = raw.drop_duplicates("order_id")
+df = df[~df.customer_id.str.startswith("QA")]
+df = df[df.actual_delivery_min.between(5, 240)].copy()
+df = add_history(df)
+train, val, test = df[df.month &lt;= 4].copy(), df[df.month == 5].copy(), df[df.month == 6].copy()   # test sealed
+
+m_v1 = make_model().fit(get_X(train, NUM_V2), y_tr)
+p_v1 = m_v1.predict(get_X(val, NUM_V2))</pre></div></details>
+</section>
+
+<section id="errors">
+  <div class="num">Step 1</div>
+  <h2>Error analysis: where does the money go?</h2>
+  <p>An average hides everything. We slice the validation orders and measure the cost in each slice. Two numbers matter:</p>
+  <ul>
+    <li><b>Cost per order in the slice:</b> how bad is it there?</li>
+    <li><b>Excess cost in total</b> = (slice cost − overall cost) × number of orders: how much money is at stake? A tiny slice with a terrible score can matter less than a large slice that is only slightly worse.</li>
+  </ul>
+  <div class="viz">
+    <div class="vt">Interactive · sort the slices two ways (overall cost 8.40)</div>
+    <div class="tabs" id="slBtns" role="group" aria-label="Sort by"></div>
+    <div class="tw"><table id="slT"></table></div>
+    <div class="bars" id="slBars"></div>
+    <p class="note">Compare the two views. They do not agree, and that is the lesson of the first knowledge check.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><h4>Biggest money</h4><b>Fine-dining and casual-dining</b> restaurants (slow, variable kitchens) carry the largest total excess cost, and <b>peak hours</b> also cost more than average.</div>
+    <div class="card"><h4>Mildly worse</h4><b>Rain and OldCity.</b></div>
+    <div class="card"><h4>Worst per order</h4>The <b>0 km / over 40 km distance</b> orders cost around 18, double the average, but there are only about 100 of them.</div>
+  </div>
+  <p>No slice is catastrophic. The model is consistently decent, with identifiable weak spots.</p>
+  <details><summary>Code: the slice table</summary><div><pre>def slice_table(frame, promise, cols):
+    t = frame.assign(_promise=promise)
+    t["_cost"] = order_costs(t.actual_delivery_min, t._promise)
+    t["_on"] = t.actual_delivery_min &lt;= t._promise
+    overall = t._cost.mean()
+    rows = []
+    for c in cols:
+        g = t.groupby(t[c].astype(str).replace("nan", "unknown"))
+        s = g.agg(orders=("_cost", "size"), on_time=("_on", "mean"), cost=("_cost", "mean")).reset_index().rename(columns={c: "value"})
+        s.insert(0, "slice", c); s["excess_cost_total"] = (s.cost - overall) * s.orders
+        rows.append(s)
+    return pd.concat(rows).sort_values("excess_cost_total", ascending=False)
+
+cols = ["zone", "restaurant_type", "weather", "rider_supply", "is_peak", "distance_check"]
+st = slice_table(val, p_v1, cols)</pre></div></details>
+  <div id="q1"></div>
+</section>
+
+<section id="detective">
+  <div class="num">Step 2</div>
+  <h2>The unsupervised toolbox as a detective kit</h2>
+  <p>We now use the tools from the unsupervised classes to <i>diagnose</i> and to <i>improve</i>. Each idea is scored on the <b>same validation set</b> with the same metric, in a running scoreboard. No idea gets special treatment.</p>
+
+  <h3>2a · Data quality: can an anomaly detector find the GPS glitches?</h3>
+  <p>Three options exist: a statistical rule (IQR), a domain rule ("a delivery cannot be 0 km or over 40 km"), or an unsupervised detector (Isolation Forest, LOF). With the answer key open (377 true glitches in 38,043 training orders, 0.99%), we can see which one is right. Model-based detectors flag the top 1.5% by score.</p>
+  <div class="viz">
+    <div class="vt">Interactive · grade the five detectors</div>
+    <div class="tabs" id="gpsBtns" role="group" aria-label="Metric"></div>
+    <div class="bars" id="gpsBars"></div>
+    <p class="note" id="gpsNote"></p>
+  </div>
+  <div class="tw"><table>
+    <tr><th>Detector</th><th>What happened</th></tr>
+    <tr><td><b>IQR on distance</b></td><td>Flagged about 2,000 orders but only about 9% were real glitches. Distance is <b>right-skewed</b>, so the upper fence (about 9.4 km) cuts into legitimate long trips.</td></tr>
+    <tr><td><b>Domain rule</b></td><td>Precision 100%, recall about 96%. When you <b>know the failure mode</b>, a rule wins.</td></tr>
+    <tr><td><b>Isolation Forest, distance only</b></td><td>Ranks glitches excellently (AUC about 0.99), but at a 1.5% budget it also flags legitimate far orders.</td></tr>
+    <tr><td><b>Isolation Forest, 5 features</b></td><td>AUC drops to about 0.8. Extra features <b>dilute</b> the signal.</td></tr>
+    <tr><td><b>LOF, 5 scaled features</b></td><td>AUC about 0.6. In several dimensions, the glitch is not locally unusual.</td></tr>
+  </table></div>
+  <div class="call"><b>Lessons.</b> (1) Detectors are only as good as the <b>features you give them</b>. (2) A generic statistic can mislead on skewed data. (3) A domain rule beats everything when the failure is known. (4) Unsupervised detectors earn their keep on <b>unknown unknowns</b>: failures nobody wrote a rule for.</div>
+  <details><summary>Code: five ways to flag a glitch</summary><div><pre>budget = 0.015
+feat5 = ["distance_km", "n_items", "order_value", "traffic_index", "riders_available_nearby"]
+def top_flags(score, share): return score &gt;= np.quantile(score, 1 - share)
+
+q1, q3 = tk.distance_km.quantile([0.25, 0.75]); fence_hi = q3 + 1.5 * (q3 - q1); fence_lo = q1 - 1.5 * (q3 - q1)
+flag_iqr  = ((tk.distance_km &gt; fence_hi) | (tk.distance_km &lt; fence_lo)).values
+flag_rule = ((tk.distance_km == 0) | (tk.distance_km &gt; 40)).values
+s_if1 = -IsolationForest(n_estimators=200, random_state=0).fit(tk[["distance_km"]]).score_samples(tk[["distance_km"]])
+s_if5 = -IsolationForest(n_estimators=200, random_state=0).fit(tk[feat5]).score_samples(tk[feat5])
+sc5 = StandardScaler().fit(tk[feat5]); lof = LocalOutlierFactor(n_neighbors=30).fit(sc5.transform(tk[feat5])); s_lof = -lof.negative_outlier_factor_</pre></div></details>
+  <div id="q2"></div>
+
+  <h4>What do we do with a flagged glitch?</h4>
+  <p>Dropping the rows would throw away good orders (their other features and their label are fine). Instead we mark the <b>distance as missing</b>, and the model, which handles missing values natively, falls back on the other information. Two fixers were compared: the domain rule, and an Isolation Forest fitted on training data only.</p>
+  <details><summary>Code: fixers and the running scoreboard</summary><div><pre>def fix_distance_rule(frame):
+    f = frame.copy(); bad = (f.distance_km == 0) | (f.distance_km &gt; 40); f.loc[bad, "distance_km"] = np.nan; return f
+
+iso_d = IsolationForest(n_estimators=200, contamination=budget, random_state=0).fit(train[["distance_km"]])
+def fix_distance_iforest(frame):
+    f = frame.copy(); bad = iso_d.predict(f[["distance_km"]]) == -1; f.loc[bad, "distance_km"] = np.nan; return f
+
+SCORE = []
+def add_idea(name, actual, promise, note=""):
+    r = promise_report(actual, promise)
+    SCORE.append({"idea": name, "cost_per_order": round(r["cost_per_order"], 3), "on_time_%": round(r["on_time_%"], 1), "note": note})</pre></details>
+  <div class="grid">
+    <div class="card"><div class="stat">17.8 → 16.0</div>cost on the 100 glitch orders after the rule-based fix</div>
+    <div class="card"><div class="stat">8.40 → 8.38</div>overall cost with the rule-based fix</div>
+    <div class="card"><div class="stat">8.46</div>overall cost with the Isolation Forest fix: slightly <b>worse</b></div>
+  </div>
+  <p>The Isolation Forest fix blanks genuine far-away distances too. The gain is small because glitches are only about 1% of orders, but the rule is worth keeping as a <b>data-quality gate</b>: cheap, safe, and protective against worse glitches later. Dropping rows from training does not help, since the quantile-loss model is already fairly robust to them.</p>
+
+  <h3>2b · PCA: a map for the eyes, not a replacement for the features</h3>
+  <p>Projecting validation orders onto the first two principal components and colouring each by its cost shows where the expensive orders live. It is a picture of <i>where to look</i>. But when PCA <b>replaces</b> the six numeric features, the cost jumps.</p>
+  <div class="viz">
+    <div class="vt">Interactive · PCA variance and the cost of replacing features</div>
+    <div class="tabs" id="pcaBtns" role="group" aria-label="View"></div>
+    <div class="bars" id="pcaBars"></div>
+    <p class="note" id="pcaNote"></p>
+  </div>
+  <div class="call"><b>Takeaway.</b> <b>PCA compresses variance, not usefulness for the target.</b> Information the trees needed (such as the exact distance and rider supply) is smeared across components.</div>
+  <details><summary>Code</summary><div><pre>num_pca = ["distance_km", "n_items", "order_value", "temperature_c", "traffic_index", "riders_available_nearby"]
+med = train[num_pca].median()
+sc_p = StandardScaler().fit(train[num_pca].fillna(med))
+pca = PCA(n_components=4).fit(sc_p.transform(train[num_pca].fillna(med)))
+# cumulative explained variance of 4 components: [0.26 0.45 0.62 0.78]
+NUM_PCA = ["hour", "is_peak", "restaurant_avg_prep_min", "rest_hist_mean", "rest_hist_std", "pc0", "pc1", "pc2", "pc3"]
+m_pca = make_model().fit(get_X(with_pcs(train), NUM_PCA), y_tr)</pre></div></details>
+
+  <h3>2c · Discovering restaurant "styles" with a GMM</h3>
+  <p>Some kitchens are steady, others chaotic and worse at peak hour. Nobody labelled them, but each restaurant leaves a <b>fingerprint</b> in the model's mistakes (residuals = actual minus predicted), computed on the <b>training period only</b>, for restaurants with at least 30 orders:</p>
+  <div class="grid">
+    <div class="card"><h4><code>res_mean</code></h4>Is it usually slower than predicted?</div>
+    <div class="card"><h4><code>res_std</code></h4>How unpredictable is it?</div>
+    <div class="card"><h4><code>peak_gap</code></h4>How much worse is it at peak hours?</div>
+  </div>
+  <p>A <b>Gaussian Mixture Model</b> is used because styles overlap, so soft memberships are more honest than hard labels, and BIC (lower is better) suggests how many styles exist. Across 390 profiled restaurants, <b>BIC chose 3 styles</b>.</p>
+  <div class="viz">
+    <div class="vt">Explorer · the three discovered styles (average residual, minutes)</div>
+    <div class="tabs" role="tablist" data-tabs>
+      <button role="tab" aria-selected="true">Style 0</button><button role="tab" aria-selected="false">Style 1</button><button role="tab" aria-selected="false">Style 2</button>
+    </div>
+    <div class="panel"><div class="grid"><div class="card"><div class="lab">res_mean</div><div class="stat">−2.53</div></div><div class="card"><div class="lab">res_std</div><div class="stat">4.42</div></div><div class="card"><div class="lab">peak_gap</div><div class="stat">−0.81</div></div><div class="card"><div class="lab">restaurants</div><div class="stat">234</div></div></div><p class="note">The steady style: small spread, no peak-hour penalty.</p></div>
+    <div class="panel" hidden><div class="grid"><div class="card"><div class="lab">res_mean</div><div class="stat">−2.86</div></div><div class="card"><div class="lab">res_std</div><div class="stat">7.19</div></div><div class="card"><div class="lab">peak_gap</div><div class="stat">0.48</div></div><div class="card"><div class="lab">restaurants</div><div class="stat">134</div></div></div><p class="note">The middle style.</p></div>
+    <div class="panel" hidden><div class="grid"><div class="card"><div class="lab">res_mean</div><div class="stat">−3.90</div></div><div class="card"><div class="lab">res_std</div><div class="stat">16.77</div></div><div class="card"><div class="lab">peak_gap</div><div class="stat">2.86</div></div><div class="card"><div class="lab">restaurants</div><div class="stat">22</div></div></div><p class="note">The chaotic style: large spread, big peak-hour gap.</p></div>
+  </div>
+  <div class="viz">
+    <div class="vt">Checking against the answer key · hidden style (rows) vs discovered style (columns)</div>
+    <div class="tw"><table class="hm" id="ariT"></table></div>
+    <p class="note">Agreement (ARI) is modest, about 0.2: the styles overlap and the fingerprint is noisy. Soft memberships suit that better than hard labels.</p>
+  </div>
+  <p>Adding the three style probabilities as model features (restaurants without a profile get missing values) lowers the validation cost from about 8.40 to about <b>8.20</b>. <b>This is the one unsupervised idea that clearly pays for itself</b>: it gives the model a compact description of <i>how risky a kitchen is</i>, so it can widen or narrow the promise.</p>
+  <details><summary>Code: fingerprints, BIC, styles as features</summary><div><pre>def restaurant_profiles(frame, model, num=NUM_V2, min_orders=30):
+    t = frame.assign(res=frame.actual_delivery_min.values - model.predict(get_X(frame, num)))
+    g = t.groupby("restaurant_id")
+    prof = pd.DataFrame({"res_mean": g.res.mean(), "res_std": g.res.std(), "n": g.size(),
+        "peak_gap": t[t.is_peak == 1].groupby("restaurant_id").res.mean() - t[t.is_peak == 0].groupby("restaurant_id").res.mean()})
+    return prof[prof.n &gt;= min_orders].dropna()
+
+prof = restaurant_profiles(train, m_v1)
+Zp = StandardScaler().fit_transform(prof[["res_mean", "res_std", "peak_gap"]])
+bics = [GaussianMixture(k, n_init=5, random_state=0).fit(Zp).bic(Zp) for k in range(1, 7)]
+K_STYLE = int(np.argmin(bics)) + 1                      # 3
+gm = GaussianMixture(K_STYLE, n_init=5, random_state=0).fit(Zp)
+
+STYLE_COLS = [f"style_p{i}" for i in range(K_STYLE)]
+style_probs = pd.DataFrame(gm.predict_proba(Zp), index=prof.index, columns=STYLE_COLS)
+NUM_STYLE = NUM_V2 + STYLE_COLS
+m_style = make_model().fit(get_X(add_styles(train, style_probs), NUM_STYLE), y_tr)</pre></div></details>
+  <div id="q3"></div>
+
+  <h3>2d · K-Means segments: useful for monitoring, but do they improve the model?</h3>
+  <p>Order context (distance, items, value, traffic, rider supply, temperature, hour) is scaled and clustered with K-Means, choosing K by silhouette on a 6,000-order sample.</p>
+  <div class="viz">
+    <div class="vt">Silhouette by K</div>
+    <div class="bars" id="silBars"></div>
+    <p class="note">All values are low (about 0.14 to 0.16): there are no sharp natural clusters. K = 8 scored highest, so segments are a <b>convenience</b>, not natural groups. Be wary of interpreting segment boundaries as facts.</p>
+  </div>
+  <div class="grid">
+    <div class="card"><h4>Idea A · segment id as a feature</h4>No change (about 8.38 against 8.40): tree models already split on the same variables.</div>
+    <div class="card"><h4>Idea B · separate model per segment</h4><b>Worse</b> (about 8.75). Each model sees a fraction of the data. Clusters are not automatically training sets.</div>
+  </div>
+  <div class="viz">
+    <div class="vt">Segments as a lens, not a model · validation segments</div>
+    <div class="tw"><table id="segT"></table></div>
+    <p class="note">One tiny segment of about 60 orders had a median distance near 59 km: K-Means <b>found the GPS glitches by itself</b>. Another segment of large baskets (five items, few riders) was clearly more expensive. Segment-level views make good monitoring dashboards.</p>
+  </div>
+  <details><summary>Code</summary><div><pre>km = KMeans(K_SEG, n_init=10, random_state=0).fit(Xc_tr)
+train["seg"], val["seg"] = km.predict(Xc_tr), km.predict(Xc_va)
+m_seg = make_model().fit(get_X(train, NUM_V2 + ["seg"]), y_tr)              # idea A
+
+p_per = np.zeros(len(val))                                                    # idea B
+for s in range(K_SEG):
+    tr_s, va_s = train[train.seg == s], val[val.seg == s]
+    p_per[(val.seg == s).values] = make_model().fit(get_X(tr_s, NUM_V2), tr_s.actual_delivery_min.values).predict(get_X(va_s, NUM_V2))</pre></div></details>
+</section>
+
+<section id="board">
+  <div class="num">Step 3</div>
+  <h2>The scoreboard</h2>
+  <div class="viz">
+    <div class="vt">Interactive · cost change versus v1 (negative is better)</div>
+    <div class="bars" id="boardBars"></div>
+    <div class="tw"><table id="boardT"></table></div>
+  </div>
+  <div class="viz">
+    <div class="vt">Paired bootstrap · is the style gain real?</div>
+    <svg viewBox="0 0 600 90" role="img" aria-label="Number line from 0 to 0.3. The interval 0.137 to 0.278 sits entirely above zero, with the average saving of 0.208 marked." style="width:100%">
+      <line x1="40" y1="55" x2="560" y2="55" stroke="#41627a"/>
+      <g font-size="11" fill="#41627a" text-anchor="middle"><text x="40" y="78">0</text><text x="213" y="78">0.1</text><text x="387" y="78">0.2</text><text x="560" y="78">0.3</text></g>
+      <rect x="277" y="42" width="245" height="26" rx="6" fill="#cfe8f7" stroke="#1c6c9c" stroke-width="2"/>
+      <circle cx="400" cy="55" r="8" fill="#0e4468"/>
+      <text x="400" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#0e4468">average saving 0.208</text>
+      <text x="277" y="36" text-anchor="middle" font-size="10" fill="#12324a">0.137</text><text x="522" y="36" text-anchor="middle" font-size="10" fill="#12324a">0.278</text>
+    </svg>
+    <p class="note">95% interval [0.137, 0.278] per order. It stays above zero, so the gain is not noise. A difference whose interval spans zero should not be trusted.</p>
+  </div>
+  <div class="tw"><table>
+    <tr><th>Idea</th><th>Verdict</th></tr>
+    <tr><td>Past-only restaurant history (Part 1)</td><td>Real gain, already in v1</td></tr>
+    <tr><td>Glitch distance → missing (domain rule)</td><td>Tiny gain, keep as a safety gate</td></tr>
+    <tr><td>Glitch distance → missing (Isolation Forest)</td><td>Slightly worse, so the rule wins</td></tr>
+    <tr><td>PCA replaces features</td><td><b>Much worse</b></td></tr>
+    <tr class="hl"><td><b>GMM restaurant style probabilities</b></td><td><b>Real gain</b> (about 0.2 saving, interval above zero)</td></tr>
+    <tr><td>K-Means segment as feature</td><td>No change</td></tr>
+    <tr><td>Separate model per segment</td><td>Worse</td></tr>
+  </table></div>
+  <details><summary>Code: the paired bootstrap</summary><div><pre>def paired_bootstrap(actual, p_a, p_b, B=500, seed=0):
+    d = order_costs(actual, p_a) - order_costs(actual, p_b)          # positive = idea B is cheaper
+    rs = np.random.RandomState(seed)
+    boots = np.array([d[rs.randint(0, len(d), len(d))].mean() for _ in range(B)])
+    return d.mean(), np.percentile(boots, [2.5, 97.5])</pre></div></details>
+  <div class="card"><h4>Try it yourself · is the gain real?</h4>
+  <div class="prompt">"I compare two promise models on the same 10,000 validation orders using the average cost per order. Model B looks 0.2 cheaper than model A. Write Python that (1) runs a paired bootstrap for the difference, (2) repeats the comparison on 10 random subsamples of 1,000 orders to show how noisy small validation sets are, and (3) explains why, when I try 7 ideas on the same validation set, the best-looking one may be partly luck (multiple comparisons), and what I should do about it, such as holding back a second validation month."</div>
+  <p style="margin:10px 0 0;font-size:.95rem">With 1,000 orders, how often would you wrongly conclude that the 0.2 gain is zero? What would you change in the scoreboard process to protect against choosing the best of seven by luck?</p></div>
+</section>
+
+<section id="final">
+  <div class="num">Step 4</div>
+  <h2>The final model</h2>
+  <p>We keep what earned its place: <b>restaurant history, style probabilities, and the glitch-distance gate</b>. Then we tune lightly (on validation) and choose tau.</p>
+  <h3>One bundle for the whole recipe</h3>
+  <p>The final model needs several learned pieces: the glitch gate, a first model, restaurant profiles, the GMM, and the final model. <code>fit_bundle</code> learns all of them from whatever training data it is handed, and <code>predict_bundle</code> applies them to new orders. We can refit on Jan to May later without copying code, and nothing is ever learned from data we are only supposed to score.</p>
+  <details><summary>Code: <code>fit_bundle</code> and <code>predict_bundle</code></summary><div><pre>def fit_bundle(train_part, params):
+    tr = fix_distance_rule(train_part)
+    first = make_model().fit(get_X(tr, NUM_V2), tr.actual_delivery_min.values)
+    prof_ = restaurant_profiles(tr, first)
+    scaler_ = StandardScaler().fit(prof_[["res_mean", "res_std", "peak_gap"]])
+    gm_ = GaussianMixture(K_STYLE, n_init=5, random_state=0).fit(scaler_.transform(prof_[["res_mean", "res_std", "peak_gap"]]))
+    table = pd.DataFrame(gm_.predict_proba(scaler_.transform(prof_[["res_mean", "res_std", "peak_gap"]])), index=prof_.index, columns=STYLE_COLS)
+    model = make_model(**params).fit(get_X(add_styles(tr, table), NUM_STYLE), tr.actual_delivery_min.values)
+    return {"table": table, "model": model, "params": params}
+
+def predict_bundle(b, frame):
+    return b["model"].predict(get_X(add_styles(fix_distance_rule(frame), b["table"]), NUM_STYLE))</pre></div></details>
+
+  <h3>Light tuning on validation</h3>
+  <p>Four settings of the gradient boosting model were tried, each fitted on Jan to Apr and scored on May. We are not searching hundreds of settings: the right loss and the right features matter far more than tuning.</p>
+  <div class="viz">
+    <div class="vt">Tuning grid · cost per order on validation</div>
+    <div class="bars" id="tuneBars"></div>
+    <p class="note">Chosen: learning_rate 0.05, max_iter 600, max_leaf_nodes 15, l2_regularization 1.0 (cost 8.144).</p>
+  </div>
+
+  <h3>Choosing tau from the cost</h3>
+  <div class="viz">
+    <div class="vt">Interactive · sweep the target on-time share τ</div>
+    <label for="tauSl" class="ui" style="font:.9rem system-ui">τ = <b id="tauV">0.75</b></label>
+    <input type="range" id="tauSl" min="0" max="5" step="1" value="2" aria-valuetext="0.75">
+    <div class="bars" id="tauBars" style="margin-top:12px"></div>
+    <div class="grid" style="margin-top:10px">
+      <div class="card"><div class="lab">on_time_%</div><div class="stat" id="tOn"></div></div>
+      <div class="card"><div class="lab">late_&gt;10min_%</div><div class="stat" id="tLate"></div></div>
+      <div class="card"><div class="lab">avg_over_promise_min</div><div class="stat" id="tOver"></div></div>
+      <div class="card"><div class="lab">cost_per_order</div><div class="stat" id="tCost"></div></div>
+    </div>
+    <p class="note">The cost curve is lowest near 0.75 to 0.8, in line with the derivation 3/(3+1) = 0.75 from Part 1. Going to 0.9 pads every order, and going to 0.6 produces too many late deliveries.</p>
+  </div>
+
+  <h3>Calibration</h3>
+  <div class="viz">
+    <div class="vt">Share of orders delivered within the promise, by promise decile (target 0.75)</div>
+    <div class="bars" id="calBars"></div>
+    <p class="note">In every decile the on-time share sits around the 0.75 target (a bit lower for the longest promises). When the app says "35 minutes", it should hold three times out of four, whatever the order.</p>
+  </div>
+  <details><summary>Code: tuning, tau sweep and calibration</summary><div><pre>grid = [dict(), dict(max_depth=4, max_iter=300, learning_rate=0.1),
+        dict(learning_rate=0.05, max_iter=600, max_leaf_nodes=15, l2_regularization=1.0),
+        dict(max_depth=6, max_iter=400, learning_rate=0.05, min_samples_leaf=40)]
+res = []
+for p in grid:
+    b = fit_bundle(train, p); res.append({"params": str(p) or "defaults", **promise_report(y_va, predict_bundle(b, val))})
+BEST = grid[int(pd.DataFrame(res).cost_per_order.idxmin())]
+
+for tau in [0.6, 0.7, 0.75, 0.8, 0.85, 0.9]:
+    mdl = make_model("quantile", tau, **BEST).fit(get_X(tr_f, NUM_STYLE), y_tr)
+
+bins = pd.qcut(p_dev, 10, duplicates="drop")
+cal = pd.DataFrame({"on_time": y_va &lt;= p_dev, "promise decile": bins}).groupby("promise decile").on_time.agg(on_time_share="mean", orders="size")</pre></div></details>
+  <div id="q4"></div>
+</section>
+
+<section id="june">
+  <div class="num">Step 5</div>
+  <h2>Open the sealed test</h2>
+  <p>Everything about the model is now decided. We refit on <b>January to May</b> (train plus validation), and score <b>June</b> exactly once.</p>
+  <details><summary>Code</summary><div><pre>TRV = pd.concat([train, val])
+bundle_final = fit_bundle(TRV, BEST)
+y_te = test.actual_delivery_min.values
+p_te = predict_bundle(bundle_final, test)
+june = pd.DataFrame({"current rule": promise_report(y_te, test.promised_eta_min.values),
+                     "final model": promise_report(y_te, p_te)}).T.round(2)</pre></div></details>
+  <div class="viz">
+    <div class="vt">Interactive · June results</div>
+    <div class="tabs" id="jvBtns" role="group" aria-label="View"></div>
+    <div class="tabs" id="jmBtns" role="group" aria-label="Metric"></div>
+    <div class="bars" id="jBars"></div>
+    <p class="note" id="jNote"></p>
+  </div>
+  <div class="grid">
+    <div class="card"><h4>The model still wins</h4>About half the cost (9.3 vs 18.9), on-time about 72% vs 56%, late over 10 min about 5% vs 18%.</div>
+    <div class="card"><h4>It missed the expectation</h4>The written expectation was 8.4, and June delivered <b>9.32</b>. Honest reporting means saying so.</div>
+    <div class="card"><h4>The shortfall has a location</h4>Existing zones cost about 8.8, close to the expectation. <b>Lakeside</b> costs about 15, and in its first week only about a third of promises held.</div>
+    <div class="card"><h4>Weather</h4>Heavy rain (about 11.6) and missing weather data (about 11.0) cost more than clear days (about 8.4).</div>
+  </div>
+  <p>Lakeside was a new zone the model had never seen, and the roads there add delay that no feature shows. By week 2, as restaurants there accumulated history, the model recovered most of the ground (the history features update themselves), though it stayed uneven.</p>
+  <div class="card"><h4>Try it yourself · explain the gap between expectation and reality</h4>
+  <div class="prompt">"My model's cost per order was expected to be 8.4 but came out at 9.3 on the test month. The test set contains orders from a new zone (Lakeside), heavy-rain days, and orders with missing weather. Write pandas code that decomposes the extra cost: how much of the gap disappears if (a) Lakeside orders had the same average cost as other zones, (b) heavy-rain orders had the average cost of clear-weather orders, (c) both? Present it as a waterfall chart, and say what share of the gap each factor explains."</div>
+  <p style="margin:10px 0 0;font-size:.95rem">Which factor is the larger contributor? Which could Kabir have anticipated before June, and what would he have needed to know?</p></div>
+</section>
+
+<section id="drift">
+  <div class="num">Step 6</div>
+  <h2>Drift: what changed, and what did it harm?</h2>
+  <p>Three signals, three questions:</p>
+  <ol>
+    <li><b>Data drift (PSI):</b> has the <i>distribution</i> of a feature changed?</li>
+    <li><b>Unseen categories:</b> is the model seeing values it has never met?</li>
+    <li><b>A novelty detector</b> (Isolation Forest fitted on Jan to May): are new orders unusual in feature space?</li>
+  </ol>
+  <h3>A drift score: PSI</h3>
+  <p>PSI compares how a feature is distributed in the reference data against new data. For numeric columns, cut the reference into 10 equal-sized bins and see how the new data fills them. For categories, compare the share of each. A tiny constant (1e-4) avoids dividing by zero for empty bins.</p>
+  <div class="grid">
+    <div class="card"><h4>Under 0.1</h4><span class="chip ok">stable</span></div>
+    <div class="card"><h4>0.1 to 0.25</h4><span class="chip ok">moderate shift</span></div>
+    <div class="card"><h4>Over 0.25</h4><span class="chip bad">large shift</span></div>
+  </div>
+  <div class="viz">
+    <div class="vt">PSI of June against Jan to May (marker lines at 0.1 and 0.25)</div>
+    <div class="bars" id="psiBars"></div>
+    <p class="note">Bars are capped at 1.0 for readability. temperature_c is 2.918.</p>
+  </div>
+  <details><summary>Code: PSI</summary><div><pre>def psi(ref, new, bins=10):
+    ref, new = pd.Series(ref).dropna(), pd.Series(new).dropna()
+    if ref.dtype == object or ref.dtype.name in ("category", "str", "string"):
+        cats = sorted(set(ref) | set(new))
+        a = ref.value_counts(normalize=True).reindex(cats).fillna(0) + 1e-4
+        b = new.value_counts(normalize=True).reindex(cats).fillna(0) + 1e-4
+    else:
+        edges = np.unique(np.quantile(ref, np.linspace(0, 1, bins + 1))); edges[0], edges[-1] = -np.inf, np.inf
+        a = pd.Series(np.histogram(ref, edges)[0] / len(ref)) + 1e-4
+        b = pd.Series(np.histogram(new, edges)[0] / len(new)) + 1e-4
+    return float(((b - a) * np.log(b / a)).sum())</pre></div></details>
+  <div class="grid">
+    <div class="card"><div class="stat">7.3%</div>of June orders come from a zone never seen in training</div>
+    <div class="card"><div class="stat">39.0% vs 0.0%</div>of orders from restaurants with fewer than 10 past orders: Lakeside vs other zones (cold start)</div>
+  </div>
+
+  <h3>A novelty detector: does June look unusual?</h3>
+  <div class="viz">
+    <div class="vt">Share of June orders flagged by an Isolation Forest fitted on Jan to May (%)</div>
+    <div class="bars" id="novBars"></div>
+    <p class="note">If the detector worked for this problem, Lakeside would stand out. It does not: about 1.9%, the same as everywhere else.</p>
+  </div>
+  <details><summary>Code</summary><div><pre>nov_cols = ["distance_km", "n_items", "order_value", "traffic_index", "riders_available_nearby", "temperature_c", "hour"]
+iso_n = IsolationForest(n_estimators=300, contamination=0.02, random_state=0).fit(TRV[nov_cols].fillna(med_n))
+flag_n = iso_n.predict(test[nov_cols].fillna(med_n)) == -1</pre></div></details>
+  <p>Projecting old and new orders onto the PCA map tells the same story: Lakeside sits <b>inside</b> the cloud of existing orders.</p>
+  <div class="viz">
+    <div class="vt">Explorer · what the three signals tell us</div>
+    <div class="tabs" role="tablist" data-tabs>
+      <button role="tab" aria-selected="true">PSI</button><button role="tab" aria-selected="false">Shift vs harm</button><button role="tab" aria-selected="false">Novelty detector</button>
+    </div>
+    <div class="panel"><p>PSI flags <code>temperature_c</code> (hugely, because June is hotter), <code>zone</code> (the new zone appeared) and <code>weather</code> (more rain). Everything else is stable.</p></div>
+    <div class="panel" hidden><p><b>Shift is not the same as harm.</b> Temperature shifted the most, but June orders on clear days performed as well as earlier months. The two shifts that mattered, zone and weather, were visible in the PSI table, but PSI alone cannot tell you which ones hurt.</p></div>
+    <div class="panel" hidden><p>The novelty detector <b>missed Lakeside</b>. In feature space, Lakeside orders look like ordinary suburban orders. What is new is a hidden road condition that <b>no feature records</b>. The earliest and most reliable alarm is <b>watching the outcome itself</b>, by zone.</p></div>
+  </div>
+  <div id="q5"></div>
+</section>
+
+<section id="monitor">
+  <div class="num">Step 7</div>
+  <h2>Monitoring and a fallback</h2>
+  <p>Labels arrive quickly, so we can track a <b>rolling on-time rate per zone</b> and raise an alarm when it drops. Replaying June: alarm if fewer than 55% of the last 80 orders in a zone arrived within the promise.</p>
+  <div class="viz">
+    <div class="vt">When would the alarm have fired?</div>
+    <div class="tw"><table>
+      <tr><th>Zone</th><th class="n">June orders</th><th>First alarm</th></tr>
+      <tr><td>Downtown</td><td class="n">2,157</td><td>none</td></tr>
+      <tr class="hl"><td><b>Lakeside</b> (first order 8 June)</td><td class="n">770</td><td><b>10 June, 12:20</b></td></tr>
+      <tr><td>Midtown</td><td class="n">1,936</td><td>none</td></tr>
+      <tr><td>OldCity</td><td class="n">1,270</td><td>none</td></tr>
+      <tr><td>SuburbEast</td><td class="n">1,463</td><td>none</td></tr>
+      <tr><td>SuburbWest</td><td class="n">1,455</td><td>none</td></tr>
+      <tr><td>TechPark</td><td class="n">1,453</td><td>none</td></tr>
+    </table></div>
+    <p class="note">No alarm fires for established zones. Only Lakeside triggers, about <b>two days after launch</b> (it needs 80 orders first): hours or days instead of the weeks it takes for complaints to pile up.</p>
+  </div>
+  <div class="viz">
+    <div class="vt">Interactive · a temporary buffer learned from the first 80 Lakeside orders (+7.9 min)</div>
+    <div class="tabs" id="bufBtns" role="group" aria-label="Buffer"></div>
+    <div class="bars" id="bufBars"></div>
+    <p class="note">The buffer lifts the on-time share in the zone from the high 50s to over 80%, and the cost improves a little (extra padding trades lateness for over-promising). It is a stop-gap while the model collects Lakeside history and is retrained.</p>
+  </div>
+  <details><summary>Code</summary><div><pre>WINDOW, ALARM_BELOW = 80, 0.55
+for z, g in tt.groupby("zone"):
+    on = (g.actual_delivery_min.values &lt;= g.p.values).astype(float)
+    roll = pd.Series(on).rolling(WINDOW).mean().values
+    hit = np.where(roll &lt; ALARM_BELOW)[0]
+
+lk = tt[tt.zone == "Lakeside"].copy()
+first_window, rest_lk = lk.iloc[:WINDOW], lk.iloc[WINDOW:]
+buffer = max(0.0, float(np.quantile(first_window.actual_delivery_min - first_window.p, 0.75)))</pre></div></details>
+  <h3>The operating plan</h3>
+  <div class="viz">
+    <div class="vt">Interactive · pick a situation</div>
+    <div class="tabs" id="opBtns" role="group" aria-label="Situation"></div>
+    <div class="card" id="opOut" style="margin:0" aria-live="polite"></div>
+  </div>
+  <div class="card"><h4>Try it yourself · a pre-mortem</h4>
+  <div class="prompt">"Our delivery-time promise model goes live next week. It predicts the 75th percentile of delivery time at order time, retrains monthly, and is monitored by a rolling on-time rate per zone. Run a pre-mortem: list 8 ways this system could fail badly in the first three months (data, product, operations, and human factors), rank them by likelihood x impact, and for the top 3 propose a specific alert (metric, threshold, window, owner) and a rollback step."</div>
+  <p style="margin:10px 0 0;font-size:.95rem">Which failure on the AI's list would our monitoring catch, and which would it miss? What is the cheapest additional signal for the one it misses?</p></div>
+</section>
+
+<section id="impact">
+  <div class="num">Step 8</div>
+  <h2>Business impact</h2>
+  <p>Per 10,000 orders in the June test, the number arriving more than 10 minutes late falls from about 1,800 to about 500, and on-time deliveries rise from about 5,600 to about 7,200.</p>
+  <div class="viz">
+    <div class="vt">Interactive · the value calculator (illustrative assumptions, edit them)</div>
+    <div class="grid">
+      <div><label for="vol" class="lab">Orders per month</label><input type="number" id="vol" value="2000000" min="0" step="100000"></div>
+      <div><label for="rup" class="lab">Rupees per cost unit</label><input type="number" id="rup" value="2" min="0" step="0.5"></div>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="lab">Cost per order</div><div class="stat">18.89 → 9.32</div>saving 9.56 units (51%)</div>
+      <div class="card"><div class="lab">Illustrative monthly value</div><div class="stat" id="crore"></div></div>
+    </div>
+    <p class="note">At 2,000,000 orders and 2.0 rupees per unit this is about 3.8 crore rupees. The rupee figure rests on two <b>assumptions</b> (monthly volume and the value of one cost unit), so it is an illustration to replace with Finance's numbers. The direction and relative size are the evidence.</p>
+  </div>
+  <details><summary>Code</summary><div><pre>VOLUME_PER_MONTH = 2_000_000       # illustrative assumption
+RUPEES_PER_COST_UNIT = 2.0         # illustrative assumption
+saving_units = cur["cost_per_order"] - mod["cost_per_order"]</pre></div></details>
+</section>
+
+<section id="memo">
+  <div class="num">Deliverable</div>
+  <h2>The decision memo</h2>
+  <p>Kabir writes one page for Ishita and Dev. This is the deliverable of an end-to-end project.</p>
+  <div class="memo">
+    <div class="hd"><b>To:</b> Ishita (Operations), Dev (Product) &nbsp;·&nbsp; <b>From:</b> Kabir (Data) &nbsp;·&nbsp; <b>Subject:</b> Delivery-time promise model: recommendation</div>
+    <h4>Recommendation</h4><p>Roll out the model in stages, with the safeguards below.</p>
+    <h4>What it does</h4><p>For each order, it promises the time that 75% of similar orders beat. The 75% comes from our cost assumption that one late minute costs three times one early minute.</p>
+    <h4>Evidence (sealed June test, never used for any decision)</h4>
+    <ul><li>Cost per order about 9.3 against about 18.9 for the current rule (roughly 50% lower).</li><li>On time about 72% against about 56%. Late by more than 10 minutes about 5% against about 18%.</li><li>Our pre-registered expectation was about 8.4, and we missed it by about 11%. The miss is concentrated in the new Lakeside zone (first-week on-time about 30%) and heavy-rain days.</li></ul>
+    <h4>What we tried that did not work</h4><p>PCA in place of the original features, separate models per segment, and segment ids as features. Dropping glitch rows from training gave no gain either. We report these so nobody repeats them.</p>
+    <h4>What helped</h4><p>The right loss and metric, past-only restaurant history, a GMM-based "kitchen style" feature, and a distance sanity gate.</p>
+    <h4>Risks and mitigations</h4>
+    <ul><li><i>New zones and new restaurants:</i> conservative buffer until enough history exists.</li><li><i>Weather extremes:</i> watch heavy-rain slices, and review the buffer for monsoon weeks.</li><li><i>Bad inputs:</i> GPS distance gate, with logging.</li><li><i>Silent decay:</i> rolling on-time rate per zone, with an alarm at 55% over 80 orders. Monthly retrain.</li></ul>
+    <h4>Rollout</h4><p>Start with a randomised 10% of orders in two mature zones against the current rule (guardrails: conversion, cancellations, complaints). Expand zone by zone, with Lakeside last, behind the buffer.</p>
+    <h4>What I need from you</h4><p style="margin:0">A decision on the cost ratio (3:1 is an assumption, and the optimal promise moves with it), and Finance's value for one cost unit.</p>
+  </div>
+  <h3>The story's end</h3>
+  <div class="card story">
+    <p>Ishita reads the memo twice. She does not ask whether the model is accurate. She asks the question that matters: "If I approve this, what will I be able to see in the first week?" Kabir shows her the zone-by-zone on-time dashboard and the alarm rule. Dev adds the A/B guardrails to the plan.</p>
+    <p>The rollout starts with 10% of orders in Downtown and Midtown. Two weeks later, the on-time rate is up, the refunds are down, and the first alarm in Lakeside, with its temporary buffer, fires on schedule, two days after launch instead of two weeks.</p>
+    <p style="margin:0">Kabir keeps one habit from this project: <b>write down the expectation before you open the test, and report the gap honestly.</b> That habit, not the model, is what made the team trust the result.</p>
+  </div>
+</section>
+
+<section id="wrap">
+  <div class="num">Wrap-up</div>
+  <h2>Key takeaways</h2>
+  <div class="viz"><div class="vt">Tap a card to expand</div><div id="keys"></div></div>
+  <h3>The whole course in one case</h3>
+  <div class="tw"><table>
+    <tr><th>Tool from the course</th><th>Where it appeared in SwiftBite</th></tr>
+    <tr><td>PCA</td><td>Visual diagnosis of expensive orders, and a failed feature-replacement test</td></tr>
+    <tr><td>t-SNE / UMAP</td><td>Candidates for the same map, where PCA gave a quick first look</td></tr>
+    <tr><td>K-Means</td><td>Order segments, silhouette to choose K, found the glitch group</td></tr>
+    <tr><td>GMM</td><td>Restaurant kitchen styles, with BIC choosing the number</td></tr>
+    <tr><td>Hierarchical / DBSCAN</td><td>Alternatives for restaurant grouping and noise handling</td></tr>
+    <tr><td>Anomaly detection</td><td>Data-quality gate and drift checks</td></tr>
+  </table></div>
+</section>
+</main>
+
+<footer>Case study part-2 post read<small>From business problem to model</small></footer>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+
+/* nav */
+const secs=[["story","Story"],["errors","Errors"],["detective","Detective kit"],["board","Scoreboard"],["final","Final model"],["june","June test"],["drift","Drift"],["monitor","Monitoring"],["impact","Impact"],["memo","Memo"],["wrap","Takeaways"]];
+$("#nav").insertAdjacentHTML("beforeend",secs.map(s=>`<a href="#${s[0]}" data-s="${s[0]}">${s[1]}</a>`).join(""));
+function onScroll(){
+  const h=document.documentElement;$("#bar").style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+"%";
+  let cur=secs[0][0];secs.forEach(s=>{if($("#"+s[0]).getBoundingClientRect().top<120)cur=s[0]});
+  $$("nav a").forEach(a=>a.classList.toggle("on",a.dataset.s===cur));
+}
+addEventListener("scroll",onScroll,{passive:true});onScroll();
+
+/* helpers */
+function initTabs(root){
+  const tabs=$$("[role=tab]",root),panels=$$(":scope > .panel",root.parentElement);
+  tabs.forEach((t,i)=>{
+    t.addEventListener("click",()=>sel(i));
+    t.addEventListener("keydown",e=>{if(e.key==="ArrowRight")sel((i+1)%tabs.length,1);if(e.key==="ArrowLeft")sel((i-1+tabs.length)%tabs.length,1)});
+  });
+  function sel(i,f){tabs.forEach((t,j)=>{t.setAttribute("aria-selected",j===i);t.tabIndex=j===i?0:-1});panels.forEach((p,j)=>p.hidden=j!==i);if(f)tabs[i].focus()}
+}
+function btnGroup(id,labels,cb,start=0){
+  const el=$(id);el.innerHTML=labels.map((l,i)=>`<button class="${i===start?'':'alt'}" aria-pressed="${i===start}">${l}</button>`).join("");
+  const bs=$$("button",el);
+  bs.forEach((b,i)=>b.onclick=()=>{bs.forEach((x,j)=>{x.classList.toggle("alt",j!==i);x.setAttribute("aria-pressed",j===i)});cb(i)});
+  cb(start);
+}
+function bars(id,rows,max,fmt,mark){
+  $(id).innerHTML=rows.map(r=>`<div class="brow"><div>${r[0]}</div><div class="btrack"><div class="bfill ${r[2]||''}" style="width:${Math.min(100,Math.max(0,r[1])/max*100)}%"></div>${(mark||[]).map(m=>`<div class="bmark" style="left:${m/max*100}%"></div>`).join("")}</div><div class="bval">${fmt?fmt(r[1]):r[1]}</div></div>`).join("");
+}
+function table(id,head,rows,numFrom=1){
+  $(id).innerHTML="<tr>"+head.map((h,i)=>`<th class="${i>=numFrom?'n':''}">${h}</th>`).join("")+"</tr>"+rows.map(r=>`<tr>`+r.map((c,i)=>`<td class="${i>=numFrom?'n':''}">${c}</td>`).join("")+"</tr>").join("");
+}
+const f2=v=>v.toFixed(2);
+
+/* error slices */
+(function(){
+  const S=[["restaurant_type","fine_dining",1239,76.0,13.56,6385],["is_peak","1",4785,74.4,9.50,5264],["restaurant_type","casual_dining",2508,75.0,9.59,2982],["weather","rain",1224,72.5,9.66,1537],["zone","OldCity",1336,72.0,9.52,1489],["rider_supply","1-2",3163,74.2,8.79,1226],["distance_check","0 km or >40 km",100,69.0,17.82,942],["weather","heavy_rain",215,60.0,11.65,698],["weather","unknown",430,68.8,9.76,581]];
+  btnGroup("#slBtns",["Where the money goes (excess total)","Looks worst per order"],k=>{
+    const R=[...S].sort((a,b)=>k===0?b[5]-a[5]:b[4]-a[4]).slice(0,k===0?8:5);
+    table("#slT",["Slice","Value","Orders","On time %","Cost","Excess total"],R.map(r=>[r[0],r[1],r[2].toLocaleString(),r[3].toFixed(1),r[4].toFixed(2),r[5].toLocaleString()]),2);
+    bars("#slBars",R.map(r=>[`${r[0]}: ${r[1]}`,k===0?r[5]:r[4],k===0?"":"b2"]),k===0?6500:20,v=>k===0?v.toLocaleString():v.toFixed(2));
+  });
+})();
+
+/* GPS detectors */
+(function(){
+  const D=[["IQR on distance",2081,8.8,48.5,null],["Domain rule",361,100,95.8,null],["IForest, distance only",818,22.4,48.5,.986],["IForest, 5 features",571,17.0,25.7,.810],["LOF, 5 scaled",571,2.3,3.4,.628]];
+  const M=[["Flagged",1,2500,"orders flagged"],["Precision %",2,100,"share of flagged that are real glitches"],["Recall %",3,100,"share of real glitches caught"],["AUC",4,1,"ranking quality of the raw score (rule-based detectors have none)"]];
+  btnGroup("#gpsBtns",M.map(m=>m[0]),k=>{
+    const m=M[k];bars("#gpsBars",D.map((d,i)=>[d[0],d[m[1]]==null?0:d[m[1]],i===1?"":"b2"]),m[2],v=>(m[1]===4&&v===0)?"n/a":(m[1]===4?v.toFixed(3):m[1]===1?v.toLocaleString():v.toFixed(1)));
+    $("#gpsNote").textContent=m[0]+": "+m[3]+".";
+  },1);
+})();
+
+/* PCA */
+(function(){
+  btnGroup("#pcaBtns",["Cumulative variance of 4 components","Cost: PCA replaces features"],k=>{
+    if(k===0){bars("#pcaBars",[["PC1",.26],["PC1 to PC2",.45,"b2"],["PC1 to PC3",.62],["PC1 to PC4",.78,"b2"]],1,v=>(v*100).toFixed(0)+"%");$("#pcaNote").textContent="Four components hold only about 78% of the variance.";}
+    else{bars("#pcaBars",[["Model v1",8.403,"b2"],["PCA(4) replaces six numeric features",12.152]],14,v=>v.toFixed(2));$("#pcaNote").textContent="Cost jumps from about 8.4 to about 12.2 when PCA replaces the six numeric features (on-time 74.4%).";}
+  });
+})();
+
+/* ARI crosstab */
+(function(){
+  const X=[["chaotic",[2,34,21]],["fast",[151,35,0]],["standard",[81,65,1]]];
+  $("#ariT").innerHTML="<tr><th>hidden style</th><th>discovered 0</th><th>discovered 1</th><th>discovered 2</th></tr>"+X.map(r=>`<tr><th>${r[0]}</th>`+r[1].map(v=>`<td style="background:rgba(28,108,156,${.06+v/151*.8});color:${v>75?'#fff':'#12324a'}">${v}</td>`).join("")+"</tr>").join("");
+})();
+
+/* silhouette + segments */
+bars("#silBars",[["K = 3",.148],["K = 4",.139,"b2"],["K = 5",.140],["K = 6",.145,"b2"],["K = 7",.149],["K = 8 ★",.157,"b2"]],.2,v=>v.toFixed(3));
+table("#segT",["Segment","Orders","Cost","Median dist (km)","Items","Riders"],[[0,3,"4.92","1.79","2.0","3.0"],[1,"1,243","7.45","2.05","3.0","7.0"],["<b>2</b>","<b>60</b>","<b>16.96</b>","<b>58.72</b>","3.0","3.0"],["<b>3</b>","573","<b>13.53</b>","2.80","5.0","3.0"],[4,879,"7.38","3.36","3.0","4.0"],[5,"5,616","8.20","2.87","3.0","3.0"],[6,857,"7.01","3.00","3.0","4.0"],[7,"1,224","9.19","3.01","5.0","3.0"]]);
+
+/* scoreboard */
+(function(){
+  const B=[["v1 (reference)",8.403,0],["Glitch gate, domain rule",8.379,-.024],["Glitch gate, Isolation Forest",8.455,.052],["PCA replaces features",12.152,3.749],["Style probabilities (GMM)",8.195,-.208],["K-Means segment id",8.375,-.028],["Model per segment",8.747,.344]];
+  bars("#boardBars",B.map((b,i)=>[b[0],Math.abs(b[2]),b[2]<0?"":"b2"]),.4,null);
+  $$("#boardBars .bval").forEach((e,i)=>e.textContent=(B[i][2]>0?"+":"")+B[i][2].toFixed(3));
+  table("#boardT",["Idea","Cost per order","vs v1"],B.map((b,i)=>[b[0],b[1].toFixed(3),(b[2]>0?"+":"")+b[2].toFixed(3)]));
+  const note=document.createElement("p");note.className="note";note.textContent="Striped bars are changes that made things worse or were negligible; solid bars lowered the cost. The PCA bar (+3.749) is clipped to the chart width.";$("#boardBars").after(note);
+})();
+
+/* tuning */
+bars("#tuneBars",[["Defaults",8.234],["depth 4, 300 iter, lr 0.1",8.182,"b2"],["lr 0.05, 600 iter, 15 leaves, L2 1.0 ★",8.144],["depth 6, 400 iter, lr 0.05, min leaf 40",8.151,"b2"]],9,v=>v.toFixed(3));
+
+/* tau sweep */
+(function(){
+  const T=[[.6,59.94,5.90,2.58,9.00],[.7,69.41,4.30,3.61,8.30],[.75,74.52,3.53,4.30,8.14],[.8,79.40,2.72,5.18,8.25],[.85,84.11,2.07,6.30,8.66],[.9,89.12,1.47,8.00,9.63]];
+  function draw(){
+    const i=+$("#tauSl").value,t=T[i];$("#tauV").textContent=t[0].toFixed(2);$("#tauSl").setAttribute("aria-valuetext",t[0].toFixed(2));
+    $("#tOn").textContent=t[1].toFixed(2);$("#tLate").textContent=t[2].toFixed(2);$("#tOver").textContent=t[3].toFixed(2);$("#tCost").textContent=t[4].toFixed(2);
+    bars("#tauBars",T.map((r,k)=>[`τ = ${r[0].toFixed(2)}${k===2?" ★ lowest":""}`,r[4],k===i?"":"b2"]),10,v=>v.toFixed(2));
+  }
+  $("#tauSl").oninput=draw;draw();
+})();
+
+/* calibration */
+(function(){
+  const C=[.759,.754,.742,.753,.730,.748,.728,.761,.773,.703];
+  bars("#calBars",C.map((v,i)=>[`Decile ${i+1}${i===0?" (shortest promises)":i===9?" (longest)":""}`,v,i===9?"b2":""]),1,v=>v.toFixed(3),[.75]);
+})();
+
+/* June */
+(function(){
+  const Z={
+   "Rule vs model":[["Current rule",56.29,17.91,4.36,18.89],["Final model",72.09,4.92,4.35,9.32]],
+   "By zone":[["Downtown",73.5,5.0,4.5,9.0],["Lakeside",54.3,14.4,2.9,15.3],["Midtown",73.5,3.4,4.3,8.1],["OldCity",72.6,5.1,4.3,9.4],["SuburbEast",73.6,3.9,4.7,9.1],["SuburbWest",72.3,4.2,4.4,9.1],["TechPark",75.4,3.5,4.7,8.6]],
+   "Lakeside by week":[["Other zones",73.5,4.2,4.5,8.8],["Week 0",30.8,20.9,1.3,19.4],["Week 1",59.6,14.2,3.3,16.2],["Week 2",71.5,8.5,4.0,10.5],["Week 3",64.2,11.3,4.2,14.1]],
+   "By weather":[["Clear",72.4,4.0,4.1,8.4],["Heavy rain",68.8,7.7,4.6,11.6],["Rain",73.4,5.4,5.1,10.5],["Unknown",70.6,8.2,4.2,11.0]]};
+  const M=[["Cost per order",4,20,""],["On time %",1,100,"%"],["Late > 10 min %",2,25,"%"],["Avg over-promise (min)",3,6,""]];
+  const names=Object.keys(Z);let view=0,met=0;
+  function draw(){
+    const rows=Z[names[view]],m=M[met];
+    bars("#jBars",rows.map(r=>[r[0],r[m[1]],(names[view]==="By zone"&&r[0]==="Lakeside")||(names[view]==="Lakeside by week"&&r[0]==="Week 0")?"b2":""]),m[2],v=>v.toFixed(1)+m[3],met===0?[8.4]:[]);
+    $("#jNote").textContent=(met===0?"Marker line at the written expectation, 8.4. ":"")+"Striped bar = the problem area (new zone / its first week).";
+  }
+  btnGroup("#jvBtns",names,k=>{view=k;draw()});
+  btnGroup("#jmBtns",M.map(m=>m[0]),k=>{met=k;draw()});
+})();
+
+/* PSI + novelty */
+bars("#psiBars",[["temperature_c",2.918],["zone",.489,"b2"],["weather",.466],["riders_available_nearby",.018,"b2"],["rest_hist_mean",.018],["traffic_index",.012,"b2"],["distance_km",.007],["order_value",.002,"b2"],["restaurant_type",.001],["n_items",0,"b2"]],1,v=>v.toFixed(3),[.1,.25]);
+bars("#novBars",[["Downtown",2.6],["Lakeside",1.9,"b2"],["Midtown",1.8],["OldCity",2.0],["SuburbEast",2.5],["SuburbWest",2.1],["TechPark",1.3]],3,v=>v.toFixed(1)+"%");
+
+/* buffer */
+(function(){
+  const B=[["Without buffer",57.54,13.48,3.14,14.67],["With +7.9 min buffer",82.46,6.23,8.85,13.82]];
+  btnGroup("#bufBtns",["On-time %","Late > 10 min %","Avg over-promise (min)","Cost per order"],k=>{
+    bars("#bufBars",B.map((b,i)=>[b[0],b[k+1],i?"":"b2"]),[100,20,10,16][k],v=>v.toFixed(2));
+  });
+})();
+
+/* operating plan */
+(function(){
+  const O=[["Known zone, established restaurant","Use the model's promise."],["Unseen zone or restaurant with fewer than 10 past orders","Add a conservative buffer until enough labelled orders exist."],["GPS distance implausible","Treat distance as unknown (the gate), and log it for the data team."],["Rolling on-time rate in a zone below the threshold","Alarm, review, retrain with fresh labels, and apply the temporary buffer."],["Monthly","Retrain on the latest months, then re-run the checks."]];
+  btnGroup("#opBtns",O.map(o=>o[0]),k=>{$("#opOut").innerHTML=`<h4 style="margin-top:0">${O[k][0]}</h4>${O[k][1]}`});
+})();
+
+/* impact */
+function impact(){const v=+$("#vol").value||0,r=+$("#rup").value||0;$("#crore").textContent=(9.56*v*r/1e7).toFixed(1)+" crore ₹"}
+$("#vol").oninput=impact;$("#rup").oninput=impact;impact();
+
+/* quizzes */
+const quizzes=[
+ ["q1","Knowledge check 1","In the table, fine-dining orders cost 13.6 each (about 1,240 orders) and GPS-glitch orders cost 17.8 each (about 100 orders). Where should the team look first, and why?",["The glitch orders, because 17.8 is the highest cost per order in the table","Neither slice, because both are above average and nothing can be done about them","Whichever slice has the lowest on-time %, since that is where customers suffer most","The fine-dining orders, because per-order excess times volume gives a much larger total"],3,"Prioritise by <b>total impact</b>, not by the worst per-order number. Fine dining accounts for a much larger share of the excess cost. Fixability also matters: glitch distances have a clear cause and a cheap fix, whereas fine dining needs better information about slow, variable kitchens."],
+ ["q2","Knowledge check 2","The IQR rule flagged about 2,000 orders, of which only 9% were real GPS glitches. Why did it perform so poorly?",["Distance is right-skewed, so the fence cuts into genuine long trips and flags them","The IQR rule can only detect errors that appear inside categorical columns","The IQR rule needs labelled glitches before it can set a useful fence","The training data was too small for the IQR rule to give a stable fence"],0,"The IQR rule assumes a fairly symmetric distribution. With a long right tail, the 1.5 × IQR fence sits at a distance that many legitimate orders exceed, so most flagged points are false alarms. A domain rule, or a detector applied to a suitable (for example log-transformed) feature, avoids this."],
+ ["q3","Knowledge check 3","Why must the restaurant profiles (and the GMM fitted on them) be built from the training period only?",["The GMM is technically unable to read any data from the validation period","Restaurants never change their kitchen style, so later months add no new information","Validation or test orders would leak outcomes into the features and flatter the score","The validation set is too small to cluster restaurants into reliable styles"],2,"A restaurant's fingerprint is built from its delivery-time errors. If those errors came from the validation or test period, the features would contain the answers to the very orders being scored. In production, the style table can only be built from completed past orders. So every learned object (scalers, clusters, encoders) is fitted on training data and then applied to later data."],
+ ["q4","Knowledge check 4","The model is trained for tau = 0.75, but on validation only 62% of orders arrive within the promise. What does this indicate, and what is a sensible response?",["The model is excellent, because 62% on-time is comfortably above the 50% mark","The cost function must be wrong, so the 3-to-1 ratio should be thrown out","Tau should be lowered to 0.62 so that the target matches what the model achieves","Promises are too short, so find the cause, then refit on fresher data or add a buffer"],3,"A model trained for the 75th percentile should land near 75% on-time. A large shortfall means its promises are too low for the data it is scoring, typically because of drift, overfitting, or a mismatch between training and validation. The fix is to find the cause, retrain on fresher data, or add a small buffer calibrated on a recent hold-out. Lowering the target would just accept more late deliveries."],
+ ["q5","Knowledge check 5","PSI says temperature drifted the most, yet the model works fine on clear days. The Lakeside zone hurt badly, and the novelty detector did not flag it. What should the team conclude?",["PSI is useless, so the team should stop computing it and rely on other checks","Feature drift is only a hint, so monitor outcomes like on-time rate by slice","The model should be retrained every hour so that it never falls behind the data","Temperature should be removed from the data, since it drifted the most in June"],1,"Drift in a feature does not necessarily harm predictions, and a feature-space detector cannot see hidden changes. Distribution checks are cheap and flag what changed, but not whether it matters. SwiftBite gets its true labels within about an hour, so tracking on-time rate and cost by zone is the fastest and most direct alarm. Use data-drift signals as early warnings, not verdicts, and use all three layers together."]
+];
+quizzes.forEach(q=>{
+  const el=$("#"+q[0]);
+  el.innerHTML=`<div class="quiz"><div class="qh">${q[1]}</div><p style="margin:8px 0;font:1rem/1.6 system-ui"><b>${q[2]}</b></p><div role="radiogroup" aria-label="Answer options">`+q[3].map((c,i)=>`<label><input type="radio" name="${q[0]}" value="${i}">${c}</label>`).join("")+`</div><div class="fb" hidden></div></div>`;
+  $$("input",el).forEach(inp=>inp.onchange=()=>{
+    const v=+inp.value,fb=$(".fb",el);
+    $$("label",el).forEach((l,i)=>{l.classList.toggle("ok",i===q[4]);l.classList.toggle("no",i===v&&v!==q[4])});
+    fb.hidden=false;fb.innerHTML=(v===q[4]?"<b>Correct.</b> ":"<b>Not quite.</b> Correct answer: "+q[3][q[4]]+"<br>")+"<br>"+q[5];
+  });
+});
+
+/* takeaways */
+(function(){
+  const K=[["Error analysis comes before improvement","Rank slices by total impact, not by the worst per-order score."],
+   ["Unsupervised tools earn their place in different ways","<b>Anomaly detection</b> works as a data-quality gate: a domain rule beat generic detectors, and detectors are only as good as their features. <b>PCA</b> is a map, not a substitute for features. <b>GMM</b> discovered restaurant kitchen styles and gave a measurable gain. <b>K-Means segments</b> helped monitoring and diagnosis, not the model."],
+   ["Score every idea on the same validation set","Report negative results, and use a bootstrap to see whether a gain is real."],
+   ["Final decisions belong to validation","Tuning, tau and calibration are settled on validation. The sealed test is opened <b>once</b>."],
+   ["Report the gap","Compare expectation with reality, and explain it."],
+   ["Drift is layered","Feature drift (PSI) and novelty detection give early hints, but <b>outcome monitoring by slice</b> is the dependable alarm. Pair it with a <b>fallback</b> for what the model has never seen."],
+   ["Ship with a plan","Staged rollout, guardrails, alarms, retraining cadence, and a one-page memo."]];
+  $("#keys").innerHTML=K.map(k=>`<details><summary>${k[0]}</summary><div>${k[1]}</div></details>`).join("");
+})();
+
+$$("[data-tabs]").forEach(initTabs);
+</script>
+</body>
+</html>
